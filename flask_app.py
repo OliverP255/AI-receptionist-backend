@@ -9,6 +9,25 @@ PORT = int(os.environ.get("PORT", 8080))
 
 app = Flask(__name__)
 
+@app.route("/twiml", methods=['POST', 'GET'])
+def twiml():
+    call_sid = request.values.get('CallSid', 'unknown')
+    ws_url = f"wss://35.189.92.242:8080?callSid={call_sid}"
+    twiml_response = f"<?xml version="1.0" encoding="UTF-8"?>"
+<Response>
+  <Start>
+    <Stream url="{ws_url}" />
+  </Start>
+  <Say>Connecting you now.</Say>
+  <!-- You can dial another number or do other stuff here -->
+</Response>
+
+    return Response(twiml_response, mimetype='text/xml')
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+
+
 
 
 @app.route("/incoming_call", methods=["POST"])
