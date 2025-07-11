@@ -58,7 +58,7 @@ def call_end():
 
 
 def run_flask_app():
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", PORT)
 
 
 if __name__ == "__main__":
