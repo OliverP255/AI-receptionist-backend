@@ -13,7 +13,7 @@ from gpt_memory import (
     append_assistant_message,
     end_conversation,
 )
-PORT = int(os.environ.get("PORT", 4050))
+PORT = int(os.environ.get("PORT", 8080))
 
 load_dotenv()
 DG_KEY = os.getenv("DEEPGRAM_API_KEY")
