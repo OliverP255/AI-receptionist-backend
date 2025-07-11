@@ -86,7 +86,7 @@ async def handle_audio(websocket, path):
 
 if __name__ == "__main__":
     start_server = websockets.serve(handle_audio, "0.0.0.0", 5000)
-    print("WebSocket server running on port 4050")
+    print("WebSocket server running on port 5000")
 
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
