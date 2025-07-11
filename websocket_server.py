@@ -88,7 +88,7 @@ async def handle_audio(websocket, path):
 
 if __name__ == "__main__":
     import os
-    start_server = websockets.serve(handle_audio, "0.0.0.0", PORT)
+    start_server = websockets.serve(handle_audio, "0.0.0.0", port=PORT)
     print(f"WebSocket server running on port {PORT}")
 
 
