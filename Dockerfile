@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
-COPY main.py websocket_server.py gpt_memory.py flask_app.py run.py
+COPY . .
 
 # Expose the Flask port
 EXPOSE 5000
