@@ -16,7 +16,7 @@ def twiml():
     twiml_response = f"<?xml version="1.0" encoding="UTF-8"?>"
 <Response>
   <Start>
-    <Stream url=f"wss://35.189.92.242:8080?callSid={call_sid}" />
+    <Stream url=f"wss://35.189.92.242:5000?callSid={call_sid}" />
   </Start>
   <Say>Connecting you now.</Say>
   <!-- You can dial another number or do other stuff here -->
