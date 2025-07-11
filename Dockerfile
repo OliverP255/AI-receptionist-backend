@@ -15,4 +15,4 @@ COPY main.py websocket_server.py gpt_memory.py flask_app.py run.py
 EXPOSE 5000
 
 # Start your application (runs both Flask + WebSocket if you use threading inside main)
-CMD ["python", "main.py"]
+CMD ["python", "run.py"]
