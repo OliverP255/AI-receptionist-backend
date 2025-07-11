@@ -85,7 +85,7 @@ async def handle_audio(websocket, path):
         print(f"Deepgram socket closed for: {call_sid}")
 
 if __name__ == "__main__":
-    start_server = websockets.serve(handle_audio, "0.0.0.0", 4050)
+    start_server = websockets.serve(handle_audio, "0.0.0.0", 5000)
     print("WebSocket server running on port 4050")
 
     asyncio.get_event_loop().run_until_complete(start_server)
