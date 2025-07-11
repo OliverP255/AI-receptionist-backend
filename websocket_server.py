@@ -94,3 +94,10 @@ if __name__ == "__main__":
 
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
+
+def run_websocket_server():
+    import asyncio
+    start_server = websockets.serve(handle_audio, "0.0.0.0", port=PORT)
+    print(f"WebSocket server running on port {PORT}")
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
