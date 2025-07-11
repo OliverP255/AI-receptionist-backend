@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/twiml", methods=['POST', 'GET'])
 def twiml():
     call_sid = request.values.get('CallSid', 'unknown')
-    ws_url = f"wss://35.189.92.242:8080?callSid={call_sid}"
+    ws_url = f"wss://35.189.92.242:5000?callSid={call_sid}"
     twiml_response = f"<?xml version="1.0" encoding="UTF-8"?>"
 <Response>
   <Start>
