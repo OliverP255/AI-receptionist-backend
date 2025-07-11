@@ -2,12 +2,14 @@
 from flask import Flask, request, Response
 from twilio.twiml.voice_response import VoiceResponse
 from gpt_memory import start_conversation, append_user_message, get_chatgpt_response, append_assistant_message, end_conversation
+import os
+
+PORT = int(os.environ.get("PORT", 8080))
+
 
 app = Flask(__name__)
 
-@app.route("/ready")
-def ready():
-    return "OK", 200
+
 
 @app.route("/incoming_call", methods=["POST"])
 def incoming_call():
@@ -53,6 +55,7 @@ def call_end():
     call_sid = request.form["CallSid"]
     end_conversation(call_sid)
     return "Conversation ended", 200
+
 
 def run_flask_app():
     app.run(host="0.0.0.0", port=5000)
