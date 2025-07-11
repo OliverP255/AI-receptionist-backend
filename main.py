@@ -1,7 +1,7 @@
 from flask import Flask
 import os
 
-PORT = int(os.environ.get("PORT", 4050))
+PORT = int(os.environ.get("PORT", 8080))
 
 app = Flask(__name__)
 
