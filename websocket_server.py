@@ -13,6 +13,7 @@ from gpt_memory import (
     append_assistant_message,
     end_conversation,
 )
+PORT = int(os.environ.get("PORT", 4050))
 
 load_dotenv()
 DG_KEY = os.getenv("DEEPGRAM_API_KEY")
@@ -84,7 +85,6 @@ async def handle_audio(websocket, path):
         await deepgram_socket.finish()
         print(f"Deepgram socket closed for: {call_sid}")
 
-PORT = int(os.environ.get("PORT", 4050))
 
 if __name__ == "__main__":
     import os
