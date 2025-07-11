@@ -5,6 +5,10 @@ from gpt_memory import start_conversation, append_user_message, get_chatgpt_resp
 
 app = Flask(__name__)
 
+@app.route("/ready")
+def ready():
+    return "OK", 200
+
 @app.route("/incoming_call", methods=["POST"])
 def incoming_call():
     call_sid = request.form["CallSid"]
