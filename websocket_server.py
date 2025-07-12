@@ -26,6 +26,10 @@ load_dotenv()
 DG_KEY = os.getenv("DEEPGRAM_API_KEY")
 dg_client = Deepgram(DG_KEY)
 
+# ✅ Create the SSL context first
+ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+
+
 # SSL context using your Let's Encrypt certs (adjust paths if needed)
 ssl_context.load_cert_chain(
     "/home/oliverpryce_business/certs/fullchain.pem",
