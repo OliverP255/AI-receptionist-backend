@@ -33,6 +33,51 @@ ssl_context.load_cert_chain(
     keyfile=f'/etc/letsencrypt/live/{DOMAIN}/privkey.pem'
 )
 
+
+#Call start handler
+async def call_start_handler(request):
+    data = await request.post()
+    call_sid = data.get("CallSid")
+    if not call_sid:
+        return web.Response(text="Missing CallSid", status=400)
+    
+    start_conversation(call_sid)
+    return web.Response(text="Conversation started", status=200)
+
+#Call message handler
+async def call_message_handler(request):
+    data = await request.post()
+    call_sid = data.get("CallSid")
+    user_text = data.get("TranscriptionText")
+
+    if not call_sid or not user_text:
+        return web.Response(text="Missing parameters", status=400)
+
+    append_user_message(call_sid, user_text)
+    assistant_reply = get_chatgpt_response(call_sid)
+    append_assistant_message(call_sid, assistant_reply)
+
+    from twilio.twiml.voice_response import VoiceResponse
+    response = VoiceResponse()
+    response.say(assistant_reply)
+
+    return web.Response(text=str(response), content_type='text/xml', status=200)
+
+
+#Call end handler
+async def call_end_handler(request):
+    data = await request.post()
+    call_sid = data.get("CallSid")
+
+    if not call_sid:
+        return web.Response(text="Missing CallSid", status=400)
+
+    end_conversation(call_sid)
+    return web.Response(text="Conversation ended", status=200)
+
+
+
+
 # === HTTP handler for Twilio incoming call webhook ===
 async def incoming_call_handler(request):
     # Twilio expects TwiML XML instructing it to open WebSocket stream
@@ -120,10 +165,18 @@ async def websocket_handler(request):
 
     return ws
 
+
+
+
 # === Main app setup ===
 app = web.Application()
 app.router.add_post('/incoming_call', incoming_call_handler)  # Twilio webhook POST
 app.router.add_get('/stream', websocket_handler)             # WebSocket endpoint
+app.router.add_post('/call/start', call_start_handler)
+app.router.add_post('/call/message', call_message_handler)
+app.router.add_post('/call/end', call_end_handler)
+
+
 
 if __name__ == "__main__":
     print(f"Starting server on port {PORT} with SSL...")
