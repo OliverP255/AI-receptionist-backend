@@ -70,8 +70,11 @@ async def handle_audio(websocket, path):
                 # Decode base64 audio payload
                 audio_b64 = data["media"]["payload"]
                 audio_bytes = base64.b64decode(audio_b64)
-                await deepgram_socket.send(audio_bytes)
-
+                try:
+                    await deepgram_socket.send(audio_bytes)
+                except Exception as e:
+                    print(f"Error sending audio to Deepgram: {e}")
+                    
             elif data.get("event") == "start":
                 print(f"Stream started for: {call_sid}")
 
