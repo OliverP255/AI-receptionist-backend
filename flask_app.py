@@ -1,6 +1,6 @@
 # flask_app.py
 from flask import Flask, request, Response
-from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.voice_response import VoiceResponse, Start, Stream
 from gpt_memory import start_conversation, append_user_message, get_chatgpt_response, append_assistant_message, end_conversation
 import os
 
@@ -9,17 +9,18 @@ PORT = int(os.environ.get("PORT", 8080))
 
 app = Flask(__name__)
 
-from twilio.twiml.voice_response import VoiceResponse, Start, Stream
-
 @app.route("/twiml", methods=["POST"])
 def twiml():
-    call_sid = request.values.get('CallSid', 'unknown')
-    response = VoiceResponse()
-    start = Start()
-    start.stream(url=f"ws://35.189.92.242:8080/stream?callSid={call_sid}")
-    response.append(start)
-    response.say("Connecting you now.")
-    return str(response), 200, {'Content-Type': 'text/xml'}
+    call_sid = request.form.get("CallSid", "unknown")
+    stream_url = f"ws://35.189.92.242:8080/stream?callSid={call_sid}"
+    response = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Start>
+    <Stream url="{stream_url}" />
+  </Start>
+  <Say>Connecting you now.</Say>
+</Response>"""
+    return Response(response, mimetype='text/xml')
 
 
 
