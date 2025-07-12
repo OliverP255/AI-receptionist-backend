@@ -42,7 +42,7 @@ def incoming_call():
 
     connect = Connect()
     connect.stream(
-        url="ws://your-ngrok-url-or-server/stream",  # Replace with actual WebSocket endpoint
+        url=""ws://35.189.92.242:8080"",  # Replace with actual WebSocket endpoint
         track="inbound_track"
     )
     response.append(connect)
