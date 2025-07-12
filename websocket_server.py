@@ -4,7 +4,7 @@ import os
 import json
 import base64
 from urllib.parse import urlparse, parse_qs
-
+import aiohttp
 from aiohttp import web, WSMsgType
 from dotenv import load_dotenv
 from deepgram import Deepgram
