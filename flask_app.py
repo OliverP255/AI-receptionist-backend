@@ -9,17 +9,20 @@ PORT = int(os.environ.get("PORT", 8080))
 
 app = Flask(__name__)
 
-@app.route("/twiml", methods=['POST', 'GET'])
+from twilio.twiml.voice_response import VoiceResponse, Start, Stream
+
+@app.route("/twiml", methods=["POST"])
 def twiml():
     call_sid = request.values.get('CallSid', 'unknown')
-    ws_url = f"ws://35.189.92.242:5000?callSid={call_sid}"
-    twiml_response = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Start>
-    <Stream url="{ws_url}" />
-  </Start>
-  <Say>Connecting you now.</Say>
-</Response>"""
+    response = VoiceResponse()
+    start = Start()
+    start.stream(url=f"ws://35.189.92.242:5000/stream?callSid={call_sid}")
+    response.append(start)
+    response.say("Connecting you now.")
+    return str(response), 200, {'Content-Type': 'text/xml'}
+
+
+
 
 
     return Response(twiml_response, mimetype='text/xml')
