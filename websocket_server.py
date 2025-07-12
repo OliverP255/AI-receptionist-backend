@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     async def main():
         print(f"WebSocket server running on port {PORT}")
-        async with websockets.serve(handle_audio, "0.0.0.0", port=PORT, path="/stream"):
+        async with websockets.serve(handle_audio, "0.0.0.0", port=PORT, path="/stream", ping_interval=None):
             await asyncio.Future()  # Run forever
 
     asyncio.run(main())
@@ -100,7 +100,7 @@ def run_websocket_server():
     import asyncio
     async def main():
         print(f"WebSocket server running on port {PORT}")
-        async with websockets.serve(handle_audio, "0.0.0.0", port=PORT, path="/stream"):
+        async with websockets.serve(handle_audio, "0.0.0.0", port=PORT, path="/stream", ping_interval=None):
             await asyncio.Future()  # Run forever
 
     asyncio.run(main())
