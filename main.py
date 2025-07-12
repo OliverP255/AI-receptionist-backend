@@ -10,5 +10,5 @@ def index():
     return "Flask server is running"
 
 def run_flask():
-    app.run(host="0.0.0.0", port=PORT)
+    app.run(host="0.0.0.0", 5000)
 
