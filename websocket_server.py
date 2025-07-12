@@ -120,14 +120,14 @@ def run_websocket_server():
     import asyncio
     async def main():
         print(f"WebSocket server running on port {PORT}")
-                async with websockets.serve(
-                handle_audio,
-                "0.0.0.0",
-                port=PORT,
-                ssl=ssl_context,
-                ping_interval=None,
-                ):
-                    await asyncio.Future()
+        async with websockets.serve(
+    handle_audio,
+    "0.0.0.0",
+    port=PORT,
+    ssl=ssl_context,
+    ping_interval=None,
+):
+            await asyncio.Future()
 
     asyncio.run(main())
 
