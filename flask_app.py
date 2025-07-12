@@ -13,14 +13,14 @@ app = Flask(__name__)
 def twiml():
     call_sid = request.values.get('CallSid', 'unknown')
     ws_url = f"wss://35.189.92.242:5000?callSid={call_sid}"
-    twiml_response = f"<?xml version="1.0" encoding="UTF-8"?>"
+    twiml_response = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Start>
-    <Stream url=f"wss://35.189.92.242:5000?callSid={call_sid}" />
+    <Stream url="{ws_url}" />
   </Start>
   <Say>Connecting you now.</Say>
-  <!-- You can dial another number or do other stuff here -->
-</Response>
+</Response>"""
+
 
     return Response(twiml_response, mimetype='text/xml')
 
