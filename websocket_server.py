@@ -13,7 +13,18 @@ from gpt_memory import (
     append_assistant_message,
     end_conversation,
 )
+
 PORT = int(os.environ.get("PORT", 8080))
+
+import ssl
+
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain(
+    certfile='/etc/letsencrypt/live/test.carefully-ai.com/fullchain.pem',
+    keyfile='/etc/letsencrypt/live/test.carefully-ai.com/privkey.pem'
+)
+
+
 
 load_dotenv()
 DG_KEY = os.getenv("DEEPGRAM_API_KEY")
