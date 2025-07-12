@@ -1,11 +1,14 @@
 import asyncio
-import websockets
+import ssl
 import os
 import json
 import base64
 from urllib.parse import urlparse, parse_qs
+
+from aiohttp import web, WSMsgType
 from dotenv import load_dotenv
 from deepgram import Deepgram
+
 from gpt_memory import (
     start_conversation,
     append_user_message,
@@ -14,31 +17,44 @@ from gpt_memory import (
     end_conversation,
 )
 
-PORT = int(os.environ.get("PORT", 8080))
+# === Config ===
+PORT = 443
+DOMAIN = "test.carefully-ai.com"
 
-import ssl
-
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ssl_context.load_cert_chain(
-    certfile='/etc/letsencrypt/live/test.carefully-ai.com/fullchain.pem',
-    keyfile='/etc/letsencrypt/live/test.carefully-ai.com/privkey.pem'
-)
-
-
-
+# Load environment variables including Deepgram key
 load_dotenv()
 DG_KEY = os.getenv("DEEPGRAM_API_KEY")
 dg_client = Deepgram(DG_KEY)
 
-async def handle_audio(websocket, path):
-    # Get call_sid from the query string
-    query = urlparse(path).query
-    call_sid = parse_qs(query).get("callSid", [None])[0]
+# SSL context using your Let's Encrypt certs (adjust paths if needed)
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain(
+    certfile=f'/etc/letsencrypt/live/{DOMAIN}/fullchain.pem',
+    keyfile=f'/etc/letsencrypt/live/{DOMAIN}/privkey.pem'
+)
 
+# === HTTP handler for Twilio incoming call webhook ===
+async def incoming_call_handler(request):
+    # Twilio expects TwiML XML instructing it to open WebSocket stream
+    twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Start>
+        <Stream url="https://{DOMAIN}/stream" />
+    </Start>
+    <Say>Connecting you now.</Say>
+</Response>"""
+    return web.Response(text=twiml, content_type='text/xml')
+
+# === WebSocket handler for /stream ===
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
+    # Get callSid from query string
+    call_sid = request.rel_url.query.get("callSid")
     if not call_sid:
-        print("No callSid provided in WebSocket URL.")
-        await websocket.close()
-        return
+        await ws.close(message=b"No callSid provided")
+        return ws
 
     print(f"WebSocket connected | Call SID: {call_sid}")
     start_conversation(call_sid)
@@ -48,11 +64,11 @@ async def handle_audio(websocket, path):
         "punctuate": True,
         "interim_results": False,
         "encoding": "linear16",
-        "sample_rate": 8000,  # Twilio audio
+        "sample_rate": 8000,
         "channels": 1,
     })
 
-    # Handle transcriptions from Deepgram
+    # Task to receive Deepgram transcripts asynchronously
     async def receive_transcripts():
         async for msg in deepgram_socket:
             try:
@@ -66,68 +82,49 @@ async def handle_audio(websocket, path):
                     append_assistant_message(call_sid, reply)
 
                     print(f"GPT: {reply}")
-                    # Optional: Send reply to frontend or TTS system
-
+                    # You could send GPT reply back over ws if you want here
             except Exception as e:
                 print(f"Error processing Deepgram response: {e}")
 
     asyncio.create_task(receive_transcripts())
 
     try:
-        async for message in websocket:
-            data = json.loads(message)
+        async for msg in ws:
+            if msg.type == WSMsgType.TEXT:
+                data = json.loads(msg.data)
 
-            if data.get("event") == "media":
-                # Decode base64 audio payload
-                audio_b64 = data["media"]["payload"]
-                audio_bytes = base64.b64decode(audio_b64)
-                try:
-                    await deepgram_socket.send(audio_bytes)
-                except Exception as e:
-                    print(f"Error sending audio to Deepgram: {e}")
-                    
-            elif data.get("event") == "start":
-                print(f"Stream started for: {call_sid}")
+                if data.get("event") == "media":
+                    audio_b64 = data["media"]["payload"]
+                    audio_bytes = base64.b64decode(audio_b64)
+                    try:
+                        await deepgram_socket.send(audio_bytes)
+                    except Exception as e:
+                        print(f"Error sending audio to Deepgram: {e}")
 
-            elif data.get("event") == "stop":
-                print(f"Stream ended for: {call_sid}")
-                end_conversation(call_sid)
+                elif data.get("event") == "start":
+                    print(f"Stream started for: {call_sid}")
 
-    except websockets.exceptions.ConnectionClosed:
-        print(f"WebSocket closed unexpectedly for: {call_sid}")
+                elif data.get("event") == "stop":
+                    print(f"Stream ended for: {call_sid}")
+                    end_conversation(call_sid)
+
+            elif msg.type == WSMsgType.ERROR:
+                print(f"WebSocket connection closed with error: {ws.exception()}")
+
+    except Exception as e:
+        print(f"Exception in WebSocket handler: {e}")
+
     finally:
         await deepgram_socket.finish()
         print(f"Deepgram socket closed for: {call_sid}")
 
+    return ws
+
+# === Main app setup ===
+app = web.Application()
+app.router.add_post('/incoming_call', incoming_call_handler)  # Twilio webhook POST
+app.router.add_get('/stream', websocket_handler)             # WebSocket endpoint
 
 if __name__ == "__main__":
-    import asyncio
-
-    async def main():
-        print(f"WebSocket server running on port {PORT}")
-        async with websockets.serve(
-    handle_audio,
-    "0.0.0.0",
-    port=PORT,
-    ssl=ssl_context,
-    ping_interval=None,
-):
-            await asyncio.Future()
-
-    asyncio.run(main())
-
-def run_websocket_server():
-    import asyncio
-    async def main():
-        print(f"WebSocket server running on port {PORT}")
-        async with websockets.serve(
-    handle_audio,
-    "0.0.0.0",
-    port=PORT,
-    ssl=ssl_context,
-    ping_interval=None,
-):
-            await asyncio.Future()
-
-    asyncio.run(main())
-
+    print(f"Starting server on port {PORT} with SSL...")
+    web.run_app(app, port=PORT, ssl_context=ssl_context)
