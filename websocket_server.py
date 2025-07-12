@@ -98,7 +98,6 @@ if __name__ == "__main__":
 
 def run_websocket_server():
     import asyncio
-
     async def main():
         print(f"WebSocket server running on port {PORT}")
         async with websockets.serve(handle_audio, "0.0.0.0", port=PORT):
