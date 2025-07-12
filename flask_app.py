@@ -16,7 +16,7 @@ def twiml():
     call_sid = request.values.get('CallSid', 'unknown')
     response = VoiceResponse()
     start = Start()
-    start.stream(url=f"ws://35.189.92.242:5000/stream?callSid={call_sid}")
+    start.stream(url=f"ws://35.189.92.242:8080/stream?callSid={call_sid}")
     response.append(start)
     response.say("Connecting you now.")
     return str(response), 200, {'Content-Type': 'text/xml'}
