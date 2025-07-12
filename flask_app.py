@@ -77,6 +77,7 @@ def call_end():
 
 
 def run_flask_app():
-    app.run(host="0.0.0.0", port=PORT)
+    app.run(host="0.0.0.0", port=5000)
+    print(f"Flask app running on port {PORT}")
 
 
