@@ -185,3 +185,8 @@ app.router.add_post('/call/end', call_end_handler)
 if __name__ == "__main__":
     print(f"Starting server on port {PORT} with SSL...")
     web.run_app(app, port=PORT, ssl_context=ssl_context)
+
+def run_websocket_server():
+    app = web.Application()
+    # Add your WebSocket routes/handlers here
+    web.run_app(app, host='0.0.0.0', port=443, ssl_context=ssl_context)
