@@ -27,11 +27,11 @@ DG_KEY = os.getenv("DEEPGRAM_API_KEY")
 dg_client = Deepgram(DG_KEY)
 
 # SSL context using your Let's Encrypt certs (adjust paths if needed)
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
-    certfile=f'/etc/letsencrypt/live/{DOMAIN}/fullchain.pem',
-    keyfile=f'/etc/letsencrypt/live/{DOMAIN}/privkey.pem'
+    "/home/oliverpryce_business/certs/fullchain.pem",
+    "/home/oliverpryce_business/certs/privkey.pem",
 )
+
 
 
 #Call start handler
