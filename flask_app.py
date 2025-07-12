@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/twiml", methods=["POST"])
 def twiml():
     call_sid = request.form.get("CallSid", "unknown")
-    stream_url = f"ws://35.189.92.242:8080/stream?callSid={call_sid}"
+    stream_url = f"wss://test.carefully-ai.com:8080/stream?callSid={call_sid}"
     response = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Start>
