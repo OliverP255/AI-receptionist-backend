@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the Flask port
-EXPOSE 8080
 EXPOSE 443
 # Start your application (runs both Flask + WebSocket if you use threading inside main)
 CMD ["python", "run.py"]
