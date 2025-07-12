@@ -18,7 +18,7 @@ from gpt_memory import (
 )
 
 # === Config ===
-PORT = 443
+PORT = 8443
 DOMAIN = "test.carefully-ai.com"
 
 # Load environment variables including Deepgram key
@@ -189,4 +189,4 @@ if __name__ == "__main__":
 def run_websocket_server():
     app = web.Application()
     # Add your WebSocket routes/handlers here
-    web.run_app(app, host='0.0.0.0', port=443, ssl_context=ssl_context)
+    web.run_app(app, host='0.0.0.0', port=PORT, ssl_context=ssl_context)
