@@ -88,7 +88,7 @@ async def incoming_call_handler(request):
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Start>
-        <Stream url="https://{DOMAIN}/stream" />
+        <Stream url="https://{DOMAIN}:8443/stream" />
     </Start>
     <Say>Connecting you now.</Say>
 </Response>"""
