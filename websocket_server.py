@@ -40,6 +40,8 @@ ssl_context.load_cert_chain(
 
 #Call start handler
 async def call_start_handler(request):
+    print("Call start endpoint reached")
+    
     data = await request.post()
     call_sid = data.get("CallSid")
     if not call_sid:
@@ -50,6 +52,8 @@ async def call_start_handler(request):
 
 #Call message handler
 async def call_message_handler(request):
+    print("Call message being handled")
+    
     data = await request.post()
     call_sid = data.get("CallSid")
     user_text = data.get("TranscriptionText")
@@ -70,6 +74,8 @@ async def call_message_handler(request):
 
 #Call end handler
 async def call_end_handler(request):
+    print("Call end being handled")
+    
     data = await request.post()
     call_sid = data.get("CallSid")
 
@@ -84,6 +90,7 @@ async def call_end_handler(request):
 
 # === HTTP handler for Twilio incoming call webhook ===
 async def incoming_call_handler(request):
+    print("Incoming endpoint hit")
     # Twilio expects TwiML XML instructing it to open WebSocket stream
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -96,6 +103,8 @@ async def incoming_call_handler(request):
 
 # === WebSocket handler for /stream ===
 async def websocket_handler(request):
+    print("Websocket endpoint for streaming hit") 
+    
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -119,6 +128,8 @@ async def websocket_handler(request):
 
     # Task to receive Deepgram transcripts asynchronously
     async def receive_transcripts():
+        print("Trascripts being received")
+        
         async for msg in deepgram_socket:
             try:
                 msg_data = json.loads(msg)
